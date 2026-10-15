@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#123c3a">
+  <meta name="description" content="Interactive student record management dashboard powered by FastAPI and SQLite.">
+  <title>StudentHub — Student Management</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="/" aria-label="StudentHub home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 9.2 12 4l9 5.2-9 5.1L3 9.2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M6.5 11.4v4.1c3.4 2.6 7.6 2.6 11 0v-4.1M21 9.5v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </span>
+        <span><strong>StudentHub</strong><small>STUDENT MANAGEMENT</small></span>
+      </a>
+
+      <div class="side-label">WORKSPACE</div>
+      <nav class="side-nav" aria-label="Main navigation">
+        <a class="nav-link active" href="#dashboard" aria-current="page">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="4" rx="1.3"/><rect x="13.5" y="10.5" width="7" height="10" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/></svg>
+          Dashboard
+        </a>
+        <a class="nav-link" href="#students" id="studentsNav">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20v-1.6a4.1 4.1 0 0 0-4.1-4.1H7.1A4.1 4.1 0 0 0 3 18.4V20M9.5 10.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM16 4.2a3.5 3.5 0 0 1 0 6.8M17 14.3a4.1 4.1 0 0 1 4 4.1V20"/></svg>
+          Students
+          <span class="nav-count" id="navCount">0</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+      <div class="side-status">
+        <span class="status-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.5h14v10H5zM8 19h8M12 15.5V19M8 9h8M8 12h5"/></svg></span>
+        <div><strong>Local database</strong><small><span class="status-dot"></span> SQLite connected via API</small></div>
+      </div>
+      <div class="sidebar-foot">EWB Internship Project <span>·</span> v2.0</div>
+    </aside>
+
+    <main class="main-content" id="dashboard">
+      <header class="topbar">
+        <button class="mobile-menu icon-button" id="mobileMenu" aria-label="Toggle navigation">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <div class="breadcrumb"><span>Workspace</span><span class="crumb-slash">/</span><strong>Students</strong></div>
+        <div class="topbar-right">
+          <button type="button" class="secondary-button theme-toggle" id="themeToggle" aria-label="Switch to dark mode" title="Switch theme">☾ <span id="themeToggleLabel">Dark mode</span></button>
+          <span class="api-pill"><span class="status-dot"></span> API connected</span>
+          <span class="topbar-date" id="todayLabel">Today</span>
+          <div class="profile-avatar" title="Student administrator">PG</div>
+        </div>
+      </header>
+
+      <section class="page-heading">
+        <div>
+          <p class="eyebrow">OVERVIEW</p>
+          <h1>Student management</h1>
+          <p class="page-subtitle">A clear view of your student records, all in one place.</p>
+        </div>
+        <button class="primary-button" id="addStudentButton">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          Add student
+        </button>
+      </section>
+
+      <section class="stats-grid" aria-label="Student statistics">
+        <article class="stat-card stat-total">
+          <div class="stat-topline"><span class="stat-label">Total students</span><span class="stat-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20v-1.5a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4V20M9.5 10.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM17 11a3.2 3.2 0 0 0 0-6.2M17 14.5a4 4 0 0 1 4 4V20"/></svg></span></div>
+          <div class="stat-value" id="totalStudents">—</div>
+          <div class="stat-note"><span class="tiny-dot green"></span> Records stored in database</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-topline"><span class="stat-label">Courses represented</span><span class="stat-icon icon-lilac"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 8.5 9-5 9 5-9 5-9-5ZM6.5 10.5v5c3.4 2.7 7.6 2.7 11 0v-5M21 8.5v5"/></svg></span></div>
+          <div class="stat-value" id="totalCourses">—</div>
+          <div class="stat-note">Unique course names</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-topline"><span class="stat-label">Email contacts</span><span class="stat-icon icon-blue"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg></span></div>
+          <div class="stat-value" id="emailContacts">—</div>
+          <div class="stat-note">Students with an email</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-topline"><span class="stat-label">Enrolled this month</span><span class="stat-icon icon-amber"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M7.5 3v4M16.5 3v4M3.5 10h17M8 14h3M8 17h6"/></svg></span></div>
+          <div class="stat-value" id="newThisMonth">—</div>
+          <div class="stat-note" id="monthNote">Recent admissions</div>
+        </article>
+      </section>
+
+      <section class="insights-grid" aria-label="Additional analytics">
+        <article class="insight-card course-insight-card">
+          <div class="insight-heading"><div><p class="eyebrow">ANALYTICS</p><h2>Course distribution</h2><p class="panel-subtitle">See how student records are spread across courses.</p></div><span class="insight-icon">▥</span></div>
+          <div id="courseChart" class="course-chart"><p class="muted">Add student records to see course insights.</p></div>
+        </article>
+        <article class="insight-card quality-insight-card">
+          <div class="insight-heading"><div><p class="eyebrow">DATA QUALITY</p><h2>Record completeness</h2><p class="panel-subtitle">A quick check of contact details.</p></div><span class="insight-icon insight-icon-purple">✓</span></div>
+          <div class="quality-metrics">
+            <div><span class="quality-label">With email</span><strong id="qualityEmail">—</strong><span class="quality-track"><i id="qualityEmailBar"></i></span></div>
+            <div><span class="quality-label">With phone</span><strong id="qualityPhone">—</strong><span class="quality-track"><i id="qualityPhoneBar"></i></span></div>
+            <div><span class="quality-label">Missing course</span><strong id="qualityCourseMissing">—</strong><span class="quality-note">Records without a course name</span></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="records-panel" id="students">
+        <div class="panel-heading">
+          <div>
+            <div class="title-row"><h2>All students</h2><span class="record-count" id="recordCount">0 records</span></div>
+            <p class="panel-subtitle">View, search, edit, or remove student records.</p>
+          </div>
+          <button class="secondary-button refresh-button" id="refreshButton" title="Refresh records">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4.5 17A8 8 0 0 0 19 12M4 17v-5h5M19.5 7A8 8 0 0 0 5 12"/></svg>
+            Refresh
+          </button>
+        </div>
+
+        <div class="toolbar">
+          <label class="search-box" for="searchInput">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>
+            <input id="searchInput" type="search" placeholder="Search by name, email, phone or ID…" autocomplete="off">
+            <kbd>Ctrl K</kbd>
+          </label>
+          <label class="course-filter-wrap" for="courseFilter">
+            <span class="sr-only">Filter by course</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6.5 7.5v5l-3 1v-6L4 5Z"/></svg>
+            <select id="courseFilter"><option value="">All courses</option></select>
+          </label>
+          <label class="sort-wrap" for="sortBy"><span>Sort</span><select id="sortBy"><option value="id">Student ID</option><option value="name">Name</option><option value="course">Course</option><option value="date_of_birth">Date of birth</option><option value="enrollment_date">Enrollment date</option></select></label>
+          <button type="button" class="secondary-button sort-direction" id="sortDirection" title="Toggle ascending or descending order" aria-label="Toggle sort direction">↑ Asc</button>
+        </div>
+        <div class="toolbar-actions">
+          <div class="toolbar-actions-left"><span class="feature-label">DATA TOOLS</span><button type="button" class="secondary-button tool-button" id="importCsvButton">↑ Import CSV</button><button type="button" class="secondary-button tool-button" id="downloadTemplateButton">↓ CSV template</button></div>
+          <button type="button" class="primary-button tool-button" id="exportCsvButton">↓ Export filtered CSV</button>
+          <input class="hidden" type="file" id="importCsvInput" accept=".csv,text/csv">
+        </div>
+
+        <div class="table-wrap">
+          <table class="students-table">
+            <thead><tr><th class="id-column">STUDENT ID</th><th>STUDENT</th><th>COURSE</th><th>CONTACT</th><th>DATE OF BIRTH</th><th>ENROLLED</th><th class="actions-heading">ACTIONS</th></tr></thead>
+            <tbody id="studentsTableBody"><tr><td colspan="7"><div class="loading-state"><span class="spinner"></span><span>Loading student records…</span></div></td></tr></tbody>
+          </table>
+          <div class="empty-state hidden" id="emptyState">
+            <div class="empty-illustration"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="11" width="44" height="42" rx="8"/><path d="M21 25h22M21 33h15M21 41h9"/></svg></div>
+            <h3 id="emptyTitle">No students yet</h3>
+            <p id="emptyDescription">Add your first student to start building your database.</p>
+            <button class="primary-button small-button" id="emptyAddButton">Add your first student</button>
+          </div>
+        </div>
+        <div class="table-footer">
+          <span id="tableFooterLabel">Showing records</span>
+          <div class="pagination-controls"><label for="pageSize">Rows <select id="pageSize"><option value="5">5</option><option value="10" selected>10</option><option value="25">25</option><option value="50">50</option></select></label><button type="button" class="secondary-button pagination-button" id="prevPage" disabled>← Previous</button><span id="pageLabel">Page 1 of 1</span><button type="button" class="secondary-button pagination-button" id="nextPage" disabled>Next →</button></div>
+          <span class="footer-hint"><span class="tiny-dot green"></span> Changes save to SQLite automatically</span>
+        </div>
+      </section>
+
+      <footer class="page-footer"><span>StudentHub <span class="footer-separator">·</span> Built with FastAPI &amp; SQLite</span><span><a href="/docs" target="_blank" rel="noreferrer">Open API docs <span aria-hidden="true">↗</span></a></span></footer>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="studentModalBackdrop" role="presentation">
+    <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="studentModalTitle">
+      <div class="modal-header">
+        <div><p class="eyebrow" id="modalEyebrow">STUDENT RECORD</p><h2 id="studentModalTitle">Add a student</h2><p class="modal-description" id="studentModalDescription">Enter the student's details below.</p></div>
+        <button type="button" class="icon-button modal-close" id="closeStudentModal" aria-label="Close dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+      </div>
+      <form id="studentForm" novalidate>
+        <input type="hidden" id="studentId">
+        <div class="form-grid">
+          <label class="form-field full-width"><span>Full name <b>*</b></span><input id="studentName" name="name" type="text" maxlength="100" placeholder="e.g. Aarav Sharma" required><small class="field-error" data-error-for="name"></small></label>
+          <label class="form-field"><span>Date of birth <b>*</b></span><input id="studentDob" name="date_of_birth" type="date" required><small class="field-error" data-error-for="date_of_birth"></small></label>
+          <label class="form-field"><span>Enrollment date <b>*</b></span><input id="studentEnrollment" name="enrollment_date" type="date" required><small class="field-error" data-error-for="enrollment_date"></small></label>
+          <label class="form-field"><span>Email address</span><input id="studentEmail" name="email" type="email" maxlength="255" placeholder="name@example.com"><small class="field-error" data-error-for="email"></small></label>
+          <label class="form-field"><span>Phone number</span><input id="studentPhone" name="phone" type="tel" maxlength="20" placeholder="+91 98765 43210"><small class="field-error" data-error-for="phone"></small></label>
+          <label class="form-field full-width"><span>Course</span><input id="studentCourse" name="course" type="text" maxlength="100" placeholder="e.g. B.Tech CSE"></label>
+          <label class="form-field full-width"><span>Address</span><input id="studentAddress" name="address" type="text" maxlength="300" placeholder="City, state (optional)"></label>
+        </div>
+        <p class="form-note"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg> Provide at least one contact method: email or phone. Use demo data for testing.</p>
+        <div class="modal-actions"><button type="button" class="secondary-button" id="cancelStudentModal">Cancel</button><button type="submit" class="primary-button" id="saveStudentButton"><span id="saveButtonText">Save student</span><span class="button-spinner hidden" id="saveSpinner"></span></button></div>
+      </form>
+    </section>
+  </div>
+
+  <div class="modal-backdrop hidden" id="viewModalBackdrop" role="presentation">
+    <section class="modal-card detail-modal" role="dialog" aria-modal="true" aria-labelledby="detailStudentName">
+      <div class="modal-header">
+        <div><p class="eyebrow">STUDENT PROFILE</p><h2 id="detailStudentName">Student details</h2><p class="modal-description" id="detailStudentId">Student record</p></div>
+        <button type="button" class="icon-button modal-close" id="closeViewModal" aria-label="Close profile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div class="profile-hero"><div class="profile-large-avatar" id="detailAvatar">ST</div><div><span class="profile-course-pill" id="detailCourse">No course listed</span><p class="profile-address" id="detailAddress">—</p></div></div>
+      <div class="detail-grid" id="detailGrid"></div>
+      <div class="modal-actions"><button type="button" class="secondary-button" id="closeViewDone">Close</button><button type="button" class="primary-button" id="editFromView">Edit student</button></div>
+    </section>
+  </div>
+
+  <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

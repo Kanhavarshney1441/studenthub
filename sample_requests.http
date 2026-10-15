@@ -1,0 +1,36 @@
+### Health check
+GET http://127.0.0.1:8000/health
+
+### Create a student (use dummy data only)
+POST http://127.0.0.1:8000/students
+Content-Type: application/json
+
+{
+  "name": "Aarav Sharma",
+  "date_of_birth": "2005-04-18",
+  "email": "aarav.demo@example.com",
+  "phone": "+91 9876543210",
+  "course": "B.Tech CSE",
+  "address": "New Delhi, India",
+  "enrollment_date": "2026-08-01"
+}
+
+### List students
+GET http://127.0.0.1:8000/students
+
+### Filter students by name/course/date range
+GET http://127.0.0.1:8000/students?name=Aarav&course=CSE&born_after=2004-01-01&born_before=2006-12-31
+
+### View student by ID (replace 1 with the ID returned by POST)
+GET http://127.0.0.1:8000/students/1
+
+### Update student fields
+PATCH http://127.0.0.1:8000/students/1
+Content-Type: application/json
+
+{
+  "course": "AI & Data Science"
+}
+
+### Delete student (replace 1 with the ID returned by POST)
+DELETE http://127.0.0.1:8000/students/1

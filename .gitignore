@@ -1,0 +1,20 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local database (contains local/demo records)
+students.db
+*.sqlite
+*.sqlite3
+
+# IDE / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
